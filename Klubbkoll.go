@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"time"
 
 	goji "goji.io"
 	"goji.io/pat"
@@ -51,7 +52,7 @@ func main() {
 
 // getConnectionStringFromFile Gets connection string from file
 func getConnectionStringFromFile() string {
-	absPath, _ := filepath.Abs("./app/connectionString.txt")
+	absPath, _ := filepath.Abs("./connectionString.txt")
 
 	byteArray, err := ioutil.ReadFile(absPath)
 	if err != nil {
@@ -82,6 +83,7 @@ func ensureIndex(s *mgo.Session) {
 
 func getAllClubs(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		t1 := time.Now()
 		session := s.Copy()
 		defer session.Close()
 
@@ -100,7 +102,7 @@ func getAllClubs(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 
-		fmt.Println(http.StatusOK)
+		fmt.Println(http.StatusOK, time.Since(t1))
 		ResponseWithJSON(w, respBody, http.StatusOK)
 	}
 }
