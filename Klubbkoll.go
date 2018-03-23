@@ -42,7 +42,9 @@ func main() {
 	mux := goji.NewMux()
 	mux.HandleFunc(pat.Get("/clubs"), getAllClubs(session))
 	mux.HandleFunc(pat.Post("/clubs"), addClub(session))
-	// mux.HandleFunc(pat.Get("/clubs/:club_id"), clubById(session))
+	mux.HandleFunc(pat.Get("/clubs/:club_id"), clubByClubID(session))
+	mux.HandleFunc(pat.Put("/clubs/:club_id"), updateClub(session))
+	mux.HandleFunc(pat.Delete("/clubs/:club_id"), deleteClub(session))
 
 	http.ListenAndServe("localhost:1234", mux)
 }
