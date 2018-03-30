@@ -1,3 +1,5 @@
+package club
+
 //Club is the main component of this project
 type Club struct {
 	ClubID       string `json:"club_id"`
