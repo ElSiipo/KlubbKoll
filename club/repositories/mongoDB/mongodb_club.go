@@ -93,7 +93,7 @@ func getAllClubs(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 		err := c.Find(bson.M{}).All(&clubs)
 		if err != nil {
 			ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
-			log.Println("Failed get all books: ", err)
+			log.Println("Failed get all clubs: ", err)
 			return
 		}
 
@@ -102,13 +102,14 @@ func getAllClubs(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 
-		fmt.Println(http.StatusOK, time.Since(t1))
 		ResponseWithJSON(w, respBody, http.StatusOK)
+		fmt.Println("Get all clubs - Status:", http.StatusOK, ":", time.Since(t1))
 	}
 }
 
 func addClub(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		t1 := time.Now()
 
 		session := s.Copy()
 		defer session.Close()
@@ -131,18 +132,21 @@ func addClub(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 			}
 
 			ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
-			log.Println("Failed insert book: ", err)
+			log.Println("Failed insert club: ", err)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Location", r.URL.Path+"/"+club.ClubID)
 		w.WriteHeader(http.StatusCreated)
+
+		fmt.Println("Add club - Status:", http.StatusOK, ":", time.Since(t1))
 	}
 }
 
 func clubByClubID(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		t1 := time.Now()
 
 		session := s.Copy()
 		defer session.Close()
@@ -170,12 +174,13 @@ func clubByClubID(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		ResponseWithJSON(w, respBody, http.StatusOK)
-
+		fmt.Println("Get club by id - Status:", http.StatusOK, ":", time.Since(t1))
 	}
 }
 
 func updateClub(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		t1 := time.Now()
 
 		session := s.Copy()
 		defer session.Close()
@@ -206,11 +211,13 @@ func updateClub(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.WriteHeader(http.StatusNoContent)
+		fmt.Println("Update club - Status:", http.StatusOK, ":", time.Since(t1))
 	}
 }
 
 func deleteClub(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		t1 := time.Now()
 
 		session := s.Copy()
 		defer session.Close()
@@ -232,15 +239,7 @@ func deleteClub(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.WriteHeader(http.StatusNoContent)
-
+		fmt.Println("Delete club - Status:", http.StatusOK, ":", time.Since(t1))
 	}
 }
 
-//Club is the main component of this project
-type Club struct {
-	ClubID       string `json:"club_id"`
-	Name         string `json:"name"`
-	Address      string `json:"address"`
-	OpeningHours string `json:"openinghours"`
-	Price        string `json:"price"`
-}
