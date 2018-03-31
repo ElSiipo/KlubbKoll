@@ -1,15 +1,14 @@
-package main
+package repository
 
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"path/filepath"
 	"time"
 
-	goji "goji.io"
+	models "github.com/ElSiipo/Klubbkoll/club"
+
 	"goji.io/pat"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -29,66 +28,31 @@ func ResponseWithJSON(w http.ResponseWriter, json []byte, code int) {
 	w.Write(json)
 }
 
-func main() {
-	session, err := mgo.Dial(getConnectionStringFromFile())
+// func ensureIndex(s *mgo.Session) {
+// 	session := s.Copy()
+// 	defer session.Close()
+// 	c := session.DB("klubbkoll").C("clubs")
+// 	index := mgo.Index{
+// 		Key:        []string{"club_id"},
+// 		Unique:     true,
+// 		DropDups:   true,
+// 		Background: true,
+// 		Sparse:     true,
+// 	}
+// 	err := c.EnsureIndex(index)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// }
 
-	if err != nil {
-		panic(err)
-	}
-	defer session.Close()
-
-	session.SetMode(mgo.Monotonic, true)
-	ensureIndex(session)
-
-	mux := goji.NewMux()
-	mux.HandleFunc(pat.Get("/clubs"), getAllClubs(session))
-	mux.HandleFunc(pat.Post("/clubs"), addClub(session))
-	mux.HandleFunc(pat.Get("/clubs/:club_id"), clubByClubID(session))
-	mux.HandleFunc(pat.Put("/clubs/:club_id"), updateClub(session))
-	mux.HandleFunc(pat.Delete("/clubs/:club_id"), deleteClub(session))
-
-	http.ListenAndServe("localhost:1234", mux)
-}
-
-// getConnectionStringFromFile Gets connection string from file
-func getConnectionStringFromFile() string {
-	absPath, _ := filepath.Abs("./connectionString.txt")
-
-	byteArray, err := ioutil.ReadFile(absPath)
-	if err != nil {
-		panic(err)
-	}
-
-	return string(byteArray[:])
-}
-
-func ensureIndex(s *mgo.Session) {
-	session := s.Copy()
-	defer session.Close()
-
-	c := session.DB("klubbkoll").C("clubs")
-
-	index := mgo.Index{
-		Key:        []string{"club_id"},
-		Unique:     true,
-		DropDups:   true,
-		Background: true,
-		Sparse:     true,
-	}
-	err := c.EnsureIndex(index)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func getAllClubs(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+func GetAll(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
 		session := s.Copy()
 		defer session.Close()
 
 		c := session.DB("klubbkoll").C("clubs")
-		var clubs []Club
+		var clubs []models.Club
 
 		err := c.Find(bson.M{}).All(&clubs)
 		if err != nil {
@@ -107,14 +71,14 @@ func getAllClubs(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func addClub(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+func Store(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
 
 		session := s.Copy()
 		defer session.Close()
 
-		var club Club
+		var club models.Club
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&club)
 		if err != nil {
@@ -144,7 +108,7 @@ func addClub(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func clubByClubID(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+func GetByID(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
 
@@ -155,7 +119,7 @@ func clubByClubID(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 
 		c := session.DB("klubbkoll").C("clubs")
 
-		var club Club
+		var club models.Club
 		err := c.Find(bson.M{"club_id": clubID}).One(&club)
 		if err != nil {
 			ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
@@ -178,7 +142,7 @@ func clubByClubID(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func updateClub(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+func Update(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
 
@@ -187,7 +151,7 @@ func updateClub(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 
 		clubID := pat.Param(r, "club_id")
 
-		var club Club
+		var club models.Club
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&club)
 		if err != nil {
@@ -215,7 +179,7 @@ func updateClub(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func deleteClub(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+func Delete(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
 
@@ -242,4 +206,3 @@ func deleteClub(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Delete club - Status:", http.StatusOK, ":", time.Since(t1))
 	}
 }
-
