@@ -9,7 +9,7 @@ import (
 	"goji.io/pat"
 	mgo "gopkg.in/mgo.v2"
 	// httpDeliver "github.com/ElSiipo/klubbkoll/club/delivery/http"
-	clubRepo "github.com/ElSiipo/klubbkoll/club/repository/mongoDB"
+	clubRepo "github.com/ElSiipo/Klubbkoll/club/repository/mongoDB"
 	// articleUcase "github.com/ElSiipo/klubbkoll/club/usecase"
 )
 
