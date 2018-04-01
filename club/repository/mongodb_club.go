@@ -28,6 +28,7 @@ func ResponseWithJSON(w http.ResponseWriter, json []byte, code int) {
 	w.Write(json)
 }
 
+// GetAll returns every club
 func GetAll(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
@@ -54,6 +55,7 @@ func GetAll(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Store inserts new entity in db
 func Store(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
@@ -91,6 +93,7 @@ func Store(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetByID returns specific club
 func GetByID(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
@@ -125,6 +128,7 @@ func GetByID(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Update updates specific club based on club_id
 func Update(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
@@ -162,6 +166,7 @@ func Update(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Delete removes entity based on club_id.
 // Delete is right now responsible for handling request AND doing DB call..
 func Delete(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
