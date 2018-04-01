@@ -1,6 +1,6 @@
 package repository
 
-import models "github.com/ElSiipo/klubbkoll/club"
+import models "github.com/ElSiipo/Klubbkoll/club"
 
 type ClubRepository interface {
 	GetAll() ([]*models.Club, error)
