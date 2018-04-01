@@ -1,11 +1,11 @@
 package repository
 
-import models "github.com/ElSiipo/klubbkoll/club"
+import models "github.com/ElSiipo/Klubbkoll/club"
 
 type ClubRepository interface {
 	GetAll() ([]*models.Club, error)
-	GetByID(id int64) (*models.Club, error)
+	GetByID(clubID string) (*models.Club, error)
 	Update(club *models.Club) (*models.Club, error)
-	Store(a *models.Club) (int64, error)
-	Delete(id int64) (bool, error)
+	Store(a *models.Club) (string, error)
+	Delete(clubID string) (bool, error)
 }

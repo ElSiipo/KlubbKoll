@@ -6,9 +6,10 @@ import (
 	"path/filepath"
 
 	goji "goji.io"
+	"goji.io/pat"
 	mgo "gopkg.in/mgo.v2"
 	// httpDeliver "github.com/ElSiipo/klubbkoll/club/delivery/http"
-	// clubRepo "github.com/ElSiipo/klubbkoll/club/repository/mongoDB"
+	clubRepo "github.com/ElSiipo/klubbkoll/club/repository/mongoDB"
 	// articleUcase "github.com/ElSiipo/klubbkoll/club/usecase"
 )
 
@@ -24,11 +25,11 @@ func main() {
 	ensureIndex(session)
 
 	mux := goji.NewMux()
-	// mux.HandleFunc(pat.Get("/clubs"), mongodb_club.GetAll(session))
-	// mux.HandleFunc(pat.Post("/clubs"), Store(session))
-	// mux.HandleFunc(pat.Get("/clubs/:club_id"), GetByID(session))
-	// mux.HandleFunc(pat.Put("/clubs/:club_id"), Update(session))
-	// mux.HandleFunc(pat.Delete("/clubs/:club_id"), Delete(session))
+	mux.HandleFunc(pat.Get("/clubs"), clubRepo.GetAll(session))
+	mux.HandleFunc(pat.Post("/clubs"), clubRepo.Store(session))
+	mux.HandleFunc(pat.Get("/clubs/:club_id"), clubRepo.GetByID(session))
+	mux.HandleFunc(pat.Put("/clubs/:club_id"), clubRepo.Update(session))
+	mux.HandleFunc(pat.Delete("/clubs/:club_id"), clubRepo.Delete(session))
 
 	http.ListenAndServe("localhost:1234", mux)
 }

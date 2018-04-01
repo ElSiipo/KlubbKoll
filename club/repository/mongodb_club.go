@@ -166,7 +166,8 @@ func Update(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Delete removes entity based on club_id
+// Delete removes entity based on club_id.
+// Delete is right now responsible for handling request AND doing DB call..
 func Delete(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
