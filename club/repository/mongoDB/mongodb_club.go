@@ -28,23 +28,7 @@ func ResponseWithJSON(w http.ResponseWriter, json []byte, code int) {
 	w.Write(json)
 }
 
-// func ensureIndex(s *mgo.Session) {
-// 	session := s.Copy()
-// 	defer session.Close()
-// 	c := session.DB("klubbkoll").C("clubs")
-// 	index := mgo.Index{
-// 		Key:        []string{"club_id"},
-// 		Unique:     true,
-// 		DropDups:   true,
-// 		Background: true,
-// 		Sparse:     true,
-// 	}
-// 	err := c.EnsureIndex(index)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// }
-
+// GetAll returns every club
 func GetAll(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
@@ -71,6 +55,7 @@ func GetAll(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Store inserts new entity in db
 func Store(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
@@ -108,6 +93,7 @@ func Store(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetByID returns specific club
 func GetByID(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
@@ -142,6 +128,7 @@ func GetByID(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Update updates specific club based on club_id
 func Update(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
@@ -179,6 +166,7 @@ func Update(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Delete removes entity based on club_id
 func Delete(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
